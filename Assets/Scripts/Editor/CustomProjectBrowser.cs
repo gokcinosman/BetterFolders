@@ -144,13 +144,16 @@ public class CustomProjectBrowser : EditorWindow
                     }
                     catch (TargetInvocationException e)
                     {
-                        // ExitGUIException'ı göz ardı et
                         if (!(e.InnerException is ExitGUIException))
                         {
                             throw;
                         }
                     }
-                    EditorGUILayout.EndVertical();
+                    finally
+                    {
+                        // Her durumda EndVertical'ın çağrılmasını sağla
+                        EditorGUILayout.EndVertical();
+                    }
                 }
                 catch (ExitGUIException)
                 {
