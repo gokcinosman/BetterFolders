@@ -69,25 +69,14 @@ public static class FolderColors
     {
         if (rule.icon == null) return;
         bool isTreeView = rect.height <= 20f;
-        float defaultFolderIconSize = isTreeView ? 16f : 64f;
-        // İkon boyutunu dinamik olarak hesapla
-        float overlayIconSize;
         if (isTreeView)
         {
-            overlayIconSize = defaultFolderIconSize * 0.75f; // Tree görünümünde varsayılan boyutun yarısı
-        }
-        else
-        {
-            // Grid görünümünde rect boyutuna göre orantılı (minimum 24, maksimum 48)
-            overlayIconSize = Mathf.Clamp(rect.width * 0.3f, 24f, 64f);
-        }
-        float paddingBottom = isTreeView ? 2f : 8f;
-        float paddingRight = isTreeView ? 4f : 16f;
-        if (isTreeView)
-        {
+            float defaultFolderIconSize = 16f;
+            float overlayIconSize = 10f;
+            float paddingRight = 3f;
             Rect iconRect = new Rect(
                 rect.x + defaultFolderIconSize - overlayIconSize - paddingRight,
-                rect.y + defaultFolderIconSize - overlayIconSize - paddingBottom,
+                rect.y + (rect.height - overlayIconSize) / 2,
                 overlayIconSize,
                 overlayIconSize
             );
@@ -95,9 +84,14 @@ public static class FolderColors
         }
         else
         {
+            // Grid görünümünde gerçek folder icon boyutunu hesapla
+            float gridFolderSize = Mathf.Min(rect.width, rect.height) * 0.75f; // 0.5f'den 0.75f'e çıkardık
+            float overlayIconSize = gridFolderSize * 0.5f;
+            float folderCenterX = rect.x + (rect.width - gridFolderSize) / 2;
+            float folderCenterY = rect.y + (rect.height * 0.3f);
             Rect iconRect = new Rect(
-                rect.x + rect.width - overlayIconSize - paddingRight,
-                rect.y + (rect.height * 0.75f) - overlayIconSize - paddingBottom,
+                folderCenterX + gridFolderSize * 0.5f,
+                folderCenterY,
                 overlayIconSize,
                 overlayIconSize
             );
