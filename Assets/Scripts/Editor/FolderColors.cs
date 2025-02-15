@@ -2,6 +2,8 @@ using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
 using FolderColorNamespace;
+using System.IO;
+using System.Linq;
 [System.Serializable]
 public class FolderRule
 {
@@ -20,12 +22,22 @@ public static class FolderColors
         LoadSettings();
         EditorApplication.projectWindowItemOnGUI += HandleProjectWindowItem;
     }
+    private static Texture2D m_folderImageCache;
+    private static Texture2D FolderImage
+    {
+        get
+        {
+            if (m_folderImageCache != null) return m_folderImageCache;
+            var imagePath = AssetDatabase.GUIDToAssetPath("d66445f0899e03442aba34473aee7242");
+            m_folderImageCache = AssetDatabase.LoadAssetAtPath<Texture2D>(imagePath);
+            return m_folderImageCache;
+        }
+    }
     private static void LoadSettings()
     {
         settings = AssetDatabase.LoadAssetAtPath<FolderColorSettings>(settingsPath);
         if (settings == null)
         {
-            // Resources klasörü yoksa oluştur
             if (!AssetDatabase.IsValidFolder("Assets/Resources"))
             {
                 AssetDatabase.CreateFolder("Assets", "Resources");
@@ -45,13 +57,14 @@ public static class FolderColors
     {
         var path = AssetDatabase.GUIDToAssetPath(guid);
         if (!AssetDatabase.IsValidFolder(path)) return;
-        // Klasör rengini ve ikonunu uygula
+        // DÜZELTME: Tüm klasör hiyerarşisini kontrol edecek şekilde güncelledik
+        var folderSegments = path.Split('/');
         foreach (var rule in settings.folderRules)
         {
-            if (path.EndsWith(rule.folderName))
+            if (folderSegments.Contains(rule.folderName))
             {
                 ApplyFolderStyle(rect, rule);
-                break;
+                break; // İlk eşleşen kuralı uygula
             }
         }
         // Mouse2/3 için özel kontrol
@@ -69,6 +82,22 @@ public static class FolderColors
     private static void ApplyFolderStyle(Rect rect, FolderRule rule)
     {
         bool isTreeView = rect.height <= 20f;
+        // Renk karışım oranını ayarla
+        Color blendedColor = rule.folderColor;
+        blendedColor.a = 0.85f; // DÜZELTME: Alpha değerini sabitledik
+        if (FolderImage != null)
+        {
+            GUI.DrawTexture(
+                GetImagePosition(rect),
+                FolderImage,
+                ScaleMode.StretchToFill,
+                true,
+                0,
+                blendedColor,
+                0,
+                0
+            );
+        }
         // Özel ikonu çiz (eğer varsa)
         if (rule.icon != null)
         {
@@ -99,6 +128,43 @@ public static class FolderColors
                 GUI.DrawTexture(overlayRect, rule.icon, ScaleMode.ScaleToFit);
             }
         }
+    }
+    private static void SetFolderColor(string guid, Rect rect)
+    {
+        var assetPath = AssetDatabase.GUIDToAssetPath(guid);
+        if (string.IsNullOrWhiteSpace(assetPath)) return;
+        if (!AssetDatabase.LoadAssetAtPath<FolderColorSettings>(assetPath))
+        {
+            Debug.LogError($"Settings dosyası bulunamadı: {assetPath}");
+            return;
+        }
+        var folderName = Path.GetFileNameWithoutExtension(assetPath);
+        var data = settings.folderRules.FirstOrDefault(x => x.folderName == folderName);
+        if (data == null) return;
+        GUI.DrawTexture(
+            position: GetImagePosition(rect),
+            image: FolderImage,
+            scaleMode: ScaleMode.StretchToFill,
+            alphaBlend: true,
+            imageAspect: 0,
+            color: data.folderColor,
+            borderWidth: 0,
+            borderRadius: 0
+        );
+    }
+    private static Rect GetImagePosition(Rect selectionRect)
+    {
+        var position = selectionRect;
+        var isOneColumn = position.height < position.width;
+        if (isOneColumn)
+        {
+            position.width = position.height;
+        }
+        else
+        {
+            position.height = position.width;
+        }
+        return position;
     }
     private static bool IsModifierPressed()
     {
