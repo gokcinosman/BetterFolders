@@ -1,5 +1,6 @@
 using UnityEditor;
 using UnityEngine;
+using FolderColorNamespace;
 [CustomEditor(typeof(FolderColorSettings))]
 public class FolderColorSettingsEditor : Editor
 {

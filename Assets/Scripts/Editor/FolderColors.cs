@@ -1,6 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
+using FolderColorNamespace;
 [System.Serializable]
 public class FolderRule
 {
@@ -215,22 +216,4 @@ public static class FolderColors
         });
         menu.ShowAsContext();
     }
-}
-public class FolderColorSettings : ScriptableObject
-{
-    public enum ModifierKeyType
-    {
-        LeftAlt,
-        RightAlt,
-        LeftControl,
-        RightControl,
-        LeftShift,
-        RightShift,
-        LeftCommand,
-        RightCommand,
-        Mouse2,    // Orta tıklama
-        Mouse3     // Ekstra fare tuşu
-    }
-    public ModifierKeyType modifierKey = ModifierKeyType.LeftAlt;
-    public List<FolderRule> folderRules = new List<FolderRule>();
 }
