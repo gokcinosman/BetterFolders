@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using FolderColorNamespace;
 using System.IO;
 using System.Linq;
+using UnityEditor.Experimental.SceneManagement;
 [System.Serializable]
 public class FolderRule
 {
@@ -12,6 +13,7 @@ public class FolderRule
     public Texture2D icon;
     public bool applyColorToSubfolders;
     public bool applyIconToSubfolders;
+    public MaterialColor materialColor = MaterialColor.Custom;
 }
 [InitializeOnLoad]
 public static class FolderColors
@@ -85,12 +87,14 @@ public static class FolderColors
             Event.current.Use();
         }
     }
-    private static void ApplyFolderStyle(Rect rect, FolderRule rule, bool applyColor, bool applyIcon)
+    private static void ApplyFolderStyle(Rect rect, FolderColorNamespace.FolderRule rule, bool applyColor, bool applyIcon)
     {
+        Color finalColor = rule.materialColor == MaterialColor.Custom ?
+            rule.folderColor :
+            FolderColorEditWindow.GetMaterialColor(rule.materialColor);
         bool isTreeView = rect.height <= 20f;
         // Renk karışım oranını ayarla
-        Color blendedColor = rule.folderColor;
-        blendedColor.a = 0.85f; // DÜZELTME: Alpha değerini sabitledik
+        finalColor.a = 0.85f; // DÜZELTME: Alpha değerini sabitledik
         if (applyColor && FolderImage != null)
         {
             GUI.DrawTexture(
@@ -99,7 +103,7 @@ public static class FolderColors
                 ScaleMode.StretchToFill,
                 true,
                 0,
-                blendedColor,
+                finalColor,
                 0,
                 0
             );
@@ -134,29 +138,6 @@ public static class FolderColors
                 GUI.DrawTexture(overlayRect, rule.icon, ScaleMode.ScaleToFit);
             }
         }
-    }
-    private static void SetFolderColor(string guid, Rect rect)
-    {
-        var assetPath = AssetDatabase.GUIDToAssetPath(guid);
-        if (string.IsNullOrWhiteSpace(assetPath)) return;
-        if (!AssetDatabase.LoadAssetAtPath<FolderColorSettings>(assetPath))
-        {
-            Debug.LogError($"Settings file not found: {assetPath}");
-            return;
-        }
-        var folderName = Path.GetFileNameWithoutExtension(assetPath);
-        var data = settings.folderRules.FirstOrDefault(x => x.folderName == folderName);
-        if (data == null) return;
-        GUI.DrawTexture(
-            position: GetImagePosition(rect),
-            image: FolderImage,
-            scaleMode: ScaleMode.StretchToFill,
-            alphaBlend: true,
-            imageAspect: 0,
-            color: data.folderColor,
-            borderWidth: 0,
-            borderRadius: 0
-        );
     }
     private static Rect GetImagePosition(Rect selectionRect)
     {
