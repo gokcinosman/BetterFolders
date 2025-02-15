@@ -68,111 +68,36 @@ public static class FolderColors
     }
     private static void ApplyFolderStyle(Rect rect, FolderRule rule)
     {
-        if (rule.icon == null) return;
         bool isTreeView = rect.height <= 20f;
-        if (isTreeView)
+        // Özel ikonu çiz (eğer varsa)
+        if (rule.icon != null)
         {
-            float defaultFolderIconSize = 16f;
-            float overlayIconSize = 10f;
-            float paddingRight = 3f;
-            Rect iconRect = new Rect(
-                rect.x + defaultFolderIconSize - overlayIconSize - paddingRight,
-                rect.y + (rect.height - overlayIconSize) / 2,
-                overlayIconSize,
-                overlayIconSize
-            );
-            GUI.DrawTexture(iconRect, rule.icon, ScaleMode.ScaleToFit);
-        }
-        else
-        {
-            // Grid görünümünde gerçek folder icon boyutunu hesapla
-            float gridFolderSize = Mathf.Min(rect.width, rect.height) * 0.75f; // 0.5f'den 0.75f'e çıkardık
-            float overlayIconSize = gridFolderSize * 0.5f;
-            float folderCenterX = rect.x + (rect.width - gridFolderSize) / 2;
-            float folderCenterY = rect.y + (rect.height * 0.3f);
-            Rect iconRect = new Rect(
-                folderCenterX + gridFolderSize * 0.5f,
-                folderCenterY,
-                overlayIconSize,
-                overlayIconSize
-            );
-            GUI.DrawTexture(iconRect, rule.icon, ScaleMode.ScaleToFit);
-        }
-    }
-    private static Texture2D CombineTextures(Texture2D background, Texture2D overlay)
-    {
-        // Texture'ları okunabilir hale getir
-        RenderTexture tmp = RenderTexture.GetTemporary(background.width, background.height, 0, RenderTextureFormat.Default, RenderTextureReadWrite.Linear);
-        Graphics.Blit(background, tmp);
-        RenderTexture previous = RenderTexture.active;
-        RenderTexture.active = tmp;
-        Texture2D readableBg = new Texture2D(background.width, background.height);
-        readableBg.ReadPixels(new Rect(0, 0, tmp.width, tmp.height), 0, 0);
-        readableBg.Apply();
-        RenderTexture.active = previous;
-        RenderTexture.ReleaseTemporary(tmp);
-        // Overlay'i boyutlandır ve çiz
-        Texture2D resizedOverlay = ResizeTexture(overlay, background.width / 2, background.height / 2);
-        Color[] bgPixels = readableBg.GetPixels();
-        Color[] overlayPixels = resizedOverlay.GetPixels();
-        // Pixel birleştirme
-        int startX = background.width - resizedOverlay.width;
-        int startY = background.height - resizedOverlay.height;
-        for (int x = 0; x < resizedOverlay.width; x++)
-        {
-            for (int y = 0; y < resizedOverlay.height; y++)
+            if (isTreeView)
             {
-                int bgIndex = (startY + y) * background.width + (startX + x);
-                int overlayIndex = y * resizedOverlay.width + x;
-                if (overlayPixels[overlayIndex].a > 0.1f)
-                    bgPixels[bgIndex] = overlayPixels[overlayIndex];
+                float overlayIconSize = 10f;
+                float paddingRight = 3f;
+                Rect overlayRect = new Rect(
+                    rect.x + 16f - overlayIconSize - paddingRight,
+                    rect.y + (rect.height - overlayIconSize) / 2,
+                    overlayIconSize,
+                    overlayIconSize
+                );
+                GUI.DrawTexture(overlayRect, rule.icon, ScaleMode.ScaleToFit);
             }
-        }
-        // Yeni texture oluştur
-        Texture2D combined = new Texture2D(background.width, background.height);
-        combined.SetPixels(bgPixels);
-        combined.Apply();
-        return combined;
-    }
-    private static Texture2D ResizeTexture(Texture2D source, int newWidth, int newHeight)
-    {
-        source.filterMode = FilterMode.Bilinear;
-        RenderTexture rt = RenderTexture.GetTemporary(newWidth, newHeight);
-        rt.filterMode = FilterMode.Bilinear;
-        RenderTexture.active = rt;
-        Graphics.Blit(source, rt);
-        Texture2D result = new Texture2D(newWidth, newHeight);
-        result.ReadPixels(new Rect(0, 0, newWidth, newHeight), 0, 0);
-        result.Apply();
-        RenderTexture.ReleaseTemporary(rt);
-        return result;
-    }
-    private static float GetIconSizeBasedOnView(Rect rect)
-    {
-        // Görünüm tipini belirle (List vs Grid)
-        bool isTreeView = rect.height <= 20f; // Unity'nin tree view yüksekliği
-        return isTreeView ? 16f : Mathf.Min(rect.width, rect.height) * 0.5f;
-    }
-    private static Rect CalculateIconPosition(Rect mainRect, float iconSize, float padding, bool hasFolderIcon)
-    {
-        // Klasör ikonu varsa merkeze, yoksa sağ alta yerleştir
-        if (hasFolderIcon)
-        {
-            return new Rect(
-                mainRect.center.x - iconSize / 2,
-                mainRect.center.y - iconSize / 2,
-                iconSize,
-                iconSize
-            );
-        }
-        else
-        {
-            return new Rect(
-                mainRect.xMax - iconSize - padding,
-                mainRect.yMax - iconSize - padding,
-                iconSize,
-                iconSize
-            );
+            else
+            {
+                float gridFolderSize = Mathf.Min(rect.width, rect.height) * 0.75f;
+                float overlayIconSize = gridFolderSize * 0.5f;
+                float folderCenterX = rect.x + (rect.width - gridFolderSize) / 2;
+                float folderCenterY = rect.y + (rect.height * 0.3f);
+                Rect overlayRect = new Rect(
+                    folderCenterX + gridFolderSize * 0.5f,
+                    folderCenterY,
+                    overlayIconSize,
+                    overlayIconSize
+                );
+                GUI.DrawTexture(overlayRect, rule.icon, ScaleMode.ScaleToFit);
+            }
         }
     }
     private static bool IsModifierPressed()
@@ -209,8 +134,14 @@ public static class FolderColors
     }
     private static void ShowFolderMenu(string guid)
     {
+        var path = AssetDatabase.GUIDToAssetPath(guid);
         var menu = new GenericMenu();
-        menu.AddItem(new GUIContent("Ayarları Düzenle"), false, () =>
+        menu.AddItem(new GUIContent("Klasörü Düzenle"), false, () =>
+        {
+            FolderColorEditWindow.ShowWindow(path, settings);
+        });
+        menu.AddSeparator("");
+        menu.AddItem(new GUIContent("Tüm Ayarları Düzenle"), false, () =>
         {
             Selection.activeObject = settings;
         });

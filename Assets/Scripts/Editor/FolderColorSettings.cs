@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEditor;
 namespace FolderColorNamespace
 {
+    [System.Serializable]
     public class FolderColorSettings : ScriptableObject
     {
         public enum ModifierKeyType
