@@ -7,6 +7,9 @@ public class FolderColorEditWindow : EditorWindow
     private Color selectedColor = Color.white;
     private Texture2D selectedIcon;
     private FolderColorSettings settings;
+    // Yeni eklenen alanlar
+    private bool applyColorToSubfolders;
+    private bool applyIconToSubfolders;
     public static void ShowWindow(string path, FolderColorSettings settings)
     {
         var window = GetWindow<FolderColorEditWindow>("Klasör Düzenle");
@@ -20,26 +23,33 @@ public class FolderColorEditWindow : EditorWindow
         {
             window.selectedColor = existingRule.folderColor;
             window.selectedIcon = existingRule.icon;
+            // Yeni başlangıç değerleri
+            window.applyColorToSubfolders = existingRule.applyColorToSubfolders;
+            window.applyIconToSubfolders = existingRule.applyIconToSubfolders;
         }
     }
     private void OnGUI()
     {
-        EditorGUILayout.LabelField("Klasör Ayarları", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("Folder Color Settings", EditorStyles.boldLabel);
         EditorGUILayout.Space(10);
         GUI.enabled = false;
-        EditorGUILayout.TextField("Klasör Yolu", folderPath);
+        EditorGUILayout.TextField("Folder Path", folderPath);
         GUI.enabled = true;
         EditorGUILayout.Space(10);
-        selectedColor = EditorGUILayout.ColorField("Klasör Rengi", selectedColor);
-        selectedIcon = (Texture2D)EditorGUILayout.ObjectField("Klasör İkonu", selectedIcon, typeof(Texture2D), false);
+        selectedColor = EditorGUILayout.ColorField("Folder Color", selectedColor);
+        selectedIcon = (Texture2D)EditorGUILayout.ObjectField("Folder Icon", selectedIcon, typeof(Texture2D), false);
+        // Yeni recursive seçenekler
+        EditorGUILayout.Space(10);
+        applyColorToSubfolders = EditorGUILayout.Toggle("Apply Color to Subfolders", applyColorToSubfolders);
+        applyIconToSubfolders = EditorGUILayout.Toggle("Apply Icon to Subfolders", applyIconToSubfolders);
         EditorGUILayout.Space(20);
-        if (GUILayout.Button("Kaydet"))
+        if (GUILayout.Button("Save"))
         {
             SaveFolderRule();
             Close();
         }
         EditorGUILayout.Space(10);
-        if (GUILayout.Button("Tüm Ayarları Düzenle"))
+        if (GUILayout.Button("Edit All Settings"))
         {
             Selection.activeObject = settings;
             Close();
@@ -54,6 +64,8 @@ public class FolderColorEditWindow : EditorWindow
         {
             existingRule.folderColor = selectedColor;
             existingRule.icon = selectedIcon;
+            existingRule.applyColorToSubfolders = applyColorToSubfolders;
+            existingRule.applyIconToSubfolders = applyIconToSubfolders;
         }
         else
         {
@@ -61,7 +73,9 @@ public class FolderColorEditWindow : EditorWindow
             {
                 folderName = folderName,
                 folderColor = selectedColor,
-                icon = selectedIcon
+                icon = selectedIcon,
+                applyColorToSubfolders = applyColorToSubfolders,
+                applyIconToSubfolders = applyIconToSubfolders
             };
             settings.folderRules.Add(newRule);
         }

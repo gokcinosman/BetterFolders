@@ -7,13 +7,13 @@ public class FolderColorSettingsEditor : Editor
     public override void OnInspectorGUI()
     {
         var settings = target as FolderColorSettings;
-        EditorGUILayout.LabelField("Kontrol Ayarları", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("Control Settings", EditorStyles.boldLabel);
         settings.modifierKey = (FolderColorSettings.ModifierKeyType)EditorGUILayout.EnumPopup(
-            "Modifier Tuşu",
+            "Modifier Key",
             settings.modifierKey
         );
         EditorGUILayout.Space(10);
-        EditorGUILayout.LabelField("Klasör Kuralları", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("Folder Rules", EditorStyles.boldLabel);
         base.OnInspectorGUI();
     }
 }

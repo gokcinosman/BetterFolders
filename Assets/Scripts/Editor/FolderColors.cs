@@ -10,6 +10,8 @@ public class FolderRule
     public string folderName;
     public Color folderColor;
     public Texture2D icon;
+    public bool applyColorToSubfolders;
+    public bool applyIconToSubfolders;
 }
 [InitializeOnLoad]
 public static class FolderColors
@@ -49,7 +51,7 @@ public static class FolderColors
             AssetDatabase.Refresh();
             if (!AssetDatabase.LoadAssetAtPath<FolderColorSettings>(settingsPath))
             {
-                Debug.LogError("FolderColorSettings oluşturulamadı! Lütfen manuel olarak kontrol edin.");
+                Debug.LogError("FolderColorSettings could not be created! Please check manually.");
             }
         }
     }
@@ -57,14 +59,18 @@ public static class FolderColors
     {
         var path = AssetDatabase.GUIDToAssetPath(guid);
         if (!AssetDatabase.IsValidFolder(path)) return;
-        // DÜZELTME: Tüm klasör hiyerarşisini kontrol edecek şekilde güncelledik
-        var folderSegments = path.Split('/');
+        var currentFolder = Path.GetFileName(path);
+        var hierarchyFolders = path.Split('/').ToList();
         foreach (var rule in settings.folderRules)
         {
-            if (folderSegments.Contains(rule.folderName))
+            bool isParentFolder = hierarchyFolders.Contains(rule.folderName);
+            bool isDirectMatch = currentFolder == rule.folderName;
+            bool shouldApplyColor = (isDirectMatch || (rule.applyColorToSubfolders && isParentFolder));
+            bool shouldApplyIcon = (isDirectMatch || (rule.applyIconToSubfolders && isParentFolder));
+            if (shouldApplyColor || shouldApplyIcon)
             {
-                ApplyFolderStyle(rect, rule);
-                break; // İlk eşleşen kuralı uygula
+                ApplyFolderStyle(rect, rule, shouldApplyColor, shouldApplyIcon);
+                break;
             }
         }
         // Mouse2/3 için özel kontrol
@@ -79,13 +85,13 @@ public static class FolderColors
             Event.current.Use();
         }
     }
-    private static void ApplyFolderStyle(Rect rect, FolderRule rule)
+    private static void ApplyFolderStyle(Rect rect, FolderRule rule, bool applyColor, bool applyIcon)
     {
         bool isTreeView = rect.height <= 20f;
         // Renk karışım oranını ayarla
         Color blendedColor = rule.folderColor;
         blendedColor.a = 0.85f; // DÜZELTME: Alpha değerini sabitledik
-        if (FolderImage != null)
+        if (applyColor && FolderImage != null)
         {
             GUI.DrawTexture(
                 GetImagePosition(rect),
@@ -99,7 +105,7 @@ public static class FolderColors
             );
         }
         // Özel ikonu çiz (eğer varsa)
-        if (rule.icon != null)
+        if (applyIcon && rule.icon != null)
         {
             if (isTreeView)
             {
@@ -135,7 +141,7 @@ public static class FolderColors
         if (string.IsNullOrWhiteSpace(assetPath)) return;
         if (!AssetDatabase.LoadAssetAtPath<FolderColorSettings>(assetPath))
         {
-            Debug.LogError($"Settings dosyası bulunamadı: {assetPath}");
+            Debug.LogError($"Settings file not found: {assetPath}");
             return;
         }
         var folderName = Path.GetFileNameWithoutExtension(assetPath);
@@ -202,12 +208,12 @@ public static class FolderColors
     {
         var path = AssetDatabase.GUIDToAssetPath(guid);
         var menu = new GenericMenu();
-        menu.AddItem(new GUIContent("Klasörü Düzenle"), false, () =>
+        menu.AddItem(new GUIContent("Edit Folder"), false, () =>
         {
             FolderColorEditWindow.ShowWindow(path, settings);
         });
         menu.AddSeparator("");
-        menu.AddItem(new GUIContent("Tüm Ayarları Düzenle"), false, () =>
+        menu.AddItem(new GUIContent("Edit All Settings"), false, () =>
         {
             Selection.activeObject = settings;
         });
