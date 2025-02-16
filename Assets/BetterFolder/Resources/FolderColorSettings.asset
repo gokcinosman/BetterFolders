@@ -15,7 +15,7 @@ MonoBehaviour:
   modifierKey: 8
   folderRules:
   - folderName: Scripts
-    folderColor: {r: 0.9843138, g: 0.57254905, b: 0.23529413, a: 1}
+    folderColor: {r: 0.48627454, g: 0.1764706, b: 0.07058824, a: 1}
     fullPath: 
     icon: {fileID: 2800000, guid: e8f773ed12919704f8da008b216e3427, type: 3}
     applyToAllFolders: 1
@@ -23,7 +23,7 @@ MonoBehaviour:
     applyIconToSubfolders: 0
     materialColor: 0
   - folderName: Scenes
-    folderColor: {r: 0.9725491, g: 0.4431373, b: 0.4431373, a: 1}
+    folderColor: {r: 0.49803925, g: 0.1137255, b: 0.1137255, a: 1}
     fullPath: 
     icon: {fileID: 2800000, guid: b1ee8bc0ead99e240b28c5d73f73d9f0, type: 3}
     applyToAllFolders: 1
@@ -31,7 +31,7 @@ MonoBehaviour:
     applyIconToSubfolders: 0
     materialColor: 0
   - folderName: Resources
-    folderColor: {r: 0.9843138, g: 0.4431373, b: 0.52156866, a: 1}
+    folderColor: {r: 0.53333336, g: 0.07450981, b: 0.21568629, a: 1}
     fullPath: 
     icon: {fileID: 2800000, guid: d4d53b421e16a994ab1d527e1b0cae79, type: 3}
     applyToAllFolders: 1
@@ -39,7 +39,7 @@ MonoBehaviour:
     applyIconToSubfolders: 0
     materialColor: 0
   - folderName: Animations
-    folderColor: {r: 0.20392159, g: 0.82745105, b: 0.6, a: 1}
+    folderColor: {r: 0.023529414, g: 0.30588236, b: 0.23137257, a: 1}
     fullPath: Assets/Animations
     icon: {fileID: 2800000, guid: 366d8dad39e7b434ab46a2befcb635cc, type: 3}
     applyToAllFolders: 1
@@ -47,15 +47,15 @@ MonoBehaviour:
     applyIconToSubfolders: 0
     materialColor: 0
   - folderName: Audio
-    folderColor: {r: 0.1764706, g: 0.8313726, b: 0.7490196, a: 1}
+    folderColor: {r: 0.07450981, g: 0.30588236, b: 0.2901961, a: 1}
     fullPath: 
     icon: {fileID: 2800000, guid: 33e5b39249fe5d340bff6571da0853db, type: 3}
     applyToAllFolders: 1
-    applyColorToSubfolders: 0
+    applyColorToSubfolders: 1
     applyIconToSubfolders: 0
     materialColor: 0
   - folderName: Editor
-    folderColor: {r: 0.13333334, g: 0.82745105, b: 0.9333334, a: 1}
+    folderColor: {r: 0.08627451, g: 0.30588236, b: 0.38823533, a: 1}
     fullPath: 
     icon: {fileID: 2800000, guid: 79f90b3fbb314424dbdf513b120b0f67, type: 3}
     applyToAllFolders: 1
@@ -63,7 +63,7 @@ MonoBehaviour:
     applyIconToSubfolders: 0
     materialColor: 0
   - folderName: Effects
-    folderColor: {r: 0.21960786, g: 0.7411765, b: 0.9725491, a: 1}
+    folderColor: {r: 0.04705883, g: 0.2901961, b: 0.43137258, a: 1}
     fullPath: 
     icon: {fileID: 2800000, guid: 7778f865d987ec24c82abb17c9355fa4, type: 3}
     applyToAllFolders: 1
@@ -71,7 +71,7 @@ MonoBehaviour:
     applyIconToSubfolders: 0
     materialColor: 0
   - folderName: Fonts
-    folderColor: {r: 0.37647063, g: 0.64705884, b: 0.9803922, a: 1}
+    folderColor: {r: 0.121568635, g: 0.26666668, b: 0.74509805, a: 1}
     fullPath: 
     icon: {fileID: 2800000, guid: 534866551139bc64bb08511b5254f927, type: 3}
     applyToAllFolders: 1
@@ -79,7 +79,7 @@ MonoBehaviour:
     applyIconToSubfolders: 0
     materialColor: 0
   - folderName: Materials
-    folderColor: {r: 0.5058824, g: 0.54901963, b: 0.9725491, a: 1}
+    folderColor: {r: 0.19215688, g: 0.18039216, b: 0.5058824, a: 1}
     fullPath: 
     icon: {fileID: 2800000, guid: 1bff0c181a1576346b36ccf491118dcd, type: 3}
     applyToAllFolders: 1
@@ -87,7 +87,7 @@ MonoBehaviour:
     applyIconToSubfolders: 0
     materialColor: 0
   - folderName: Models
-    folderColor: {r: 0.654902, g: 0.54509807, b: 0.9803922, a: 1}
+    folderColor: {r: 0.29803923, g: 0.1137255, b: 0.58431375, a: 1}
     fullPath: 
     icon: {fileID: 2800000, guid: 3d960c6e8b5d2454f9be0242dbf6cde8, type: 3}
     applyToAllFolders: 1
@@ -95,7 +95,7 @@ MonoBehaviour:
     applyIconToSubfolders: 0
     materialColor: 0
   - folderName: Plugins
-    folderColor: {r: 0.75294125, g: 0.5176471, b: 0.98823535, a: 1}
+    folderColor: {r: 0.34509805, g: 0.10980393, b: 0.5294118, a: 1}
     fullPath: 
     icon: {fileID: 2800000, guid: a599a59319e516b4b816455e191c9fe5, type: 3}
     applyToAllFolders: 1
@@ -103,7 +103,7 @@ MonoBehaviour:
     applyIconToSubfolders: 0
     materialColor: 0
   - folderName: Prefabs
-    folderColor: {r: 0.909804, g: 0.47450984, b: 0.97647065, a: 1}
+    folderColor: {r: 0.43921572, g: 0.10196079, b: 0.45882356, a: 1}
     fullPath: 
     icon: {fileID: 2800000, guid: fb0e68a1a82c3a04c9e5a953987f5d2c, type: 3}
     applyToAllFolders: 1
@@ -111,7 +111,7 @@ MonoBehaviour:
     applyIconToSubfolders: 0
     materialColor: 0
   - folderName: Shaders
-    folderColor: {r: 0.9803922, g: 0.8000001, b: 0.08235294, a: 1}
+    folderColor: {r: 0.4431373, g: 0.24705884, b: 0.07058824, a: 1}
     fullPath: 
     icon: {fileID: 2800000, guid: d873c419420aac34799bf720b977ef71, type: 3}
     applyToAllFolders: 1
@@ -119,7 +119,7 @@ MonoBehaviour:
     applyIconToSubfolders: 0
     materialColor: 0
   - folderName: Textures
-    folderColor: {r: 0.2901961, g: 0.8705883, b: 0.5019608, a: 1}
+    folderColor: {r: 0.078431375, g: 0.3254902, b: 0.1764706, a: 1}
     fullPath: 
     icon: {fileID: 2800000, guid: c08f488b0b28ba14e92b0328544ee472, type: 3}
     applyToAllFolders: 1
@@ -127,7 +127,7 @@ MonoBehaviour:
     applyIconToSubfolders: 0
     materialColor: 0
   - folderName: Sprites
-    folderColor: {r: 0.6392157, g: 0.90196085, b: 0.20784315, a: 1}
+    folderColor: {r: 0.21176472, g: 0.3254902, b: 0.078431375, a: 1}
     fullPath: 
     icon: {fileID: 2800000, guid: 36f4fcc33aefd1b43a191bdc79e24a23, type: 3}
     applyToAllFolders: 1
@@ -135,7 +135,7 @@ MonoBehaviour:
     applyIconToSubfolders: 0
     materialColor: 0
   - folderName: Sprites
-    folderColor: {r: 0.6392157, g: 0.90196085, b: 0.20784315, a: 1}
+    folderColor: {r: 0.21176472, g: 0.3254902, b: 0.078431375, a: 1}
     fullPath: 
     icon: {fileID: 2800000, guid: 36f4fcc33aefd1b43a191bdc79e24a23, type: 3}
     applyToAllFolders: 1

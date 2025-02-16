@@ -7,7 +7,6 @@ using System;
 [CustomEditor(typeof(FolderColorSettings))]
 public class FolderColorSettingsEditor : Editor
 {
-    // Preset veri yapısını taşıma
     private sealed class PresetData
     {
         public string Name { get; }
@@ -30,6 +29,8 @@ public class FolderColorSettingsEditor : Editor
         new("Tailwind 700", "b8f3594ed26e56142a97ab371cd4ed0d"),
         new("Tailwind 800", "e6049f55824952b42b81c376d6b98dd1"),
         new("Tailwind 900", "160a9e8504d038641929418e9e0f2a72"),
+        new("Natural Tones", "76902034c7116aa4e9eef64f0afa4dca"),
+        new("Ocean Tones", "56947363dd205ae4bbe495d43c6d5e24"),
     };
     private string searchText = string.Empty;
     public override void OnInspectorGUI()
@@ -41,6 +42,18 @@ public class FolderColorSettingsEditor : Editor
             settings.modifierKey
         );
         EditorGUILayout.Space(10);
+        // Export/Import düğmeleri için yatay düzen
+        using (new EditorGUILayout.HorizontalScope())
+        {
+            if (GUILayout.Button("Export Settings"))
+            {
+                ExportSettings(settings);
+            }
+            if (GUILayout.Button("Import Settings"))
+            {
+                ImportSettings(settings);
+            }
+        }
         if (GUILayout.Button("Load Preset"))
         {
             var menu = new GenericMenu();
@@ -55,8 +68,7 @@ public class FolderColorSettingsEditor : Editor
             menu.ShowAsContext();
         }
         EditorGUILayout.Space(10);
-        EditorGUILayout.LabelField("Folder Rules", EditorStyles.boldLabel);
-        searchText = EditorGUILayout.TextField("Search", searchText);
+        searchText = EditorGUILayout.TextField("Search Folder Name", searchText);
         if (!string.IsNullOrEmpty(searchText))
         {
             var filteredRules = settings.folderRules.Where(r =>
@@ -127,6 +139,74 @@ public class FolderColorSettingsEditor : Editor
         catch (System.Exception e)
         {
             Debug.LogError($"Preset import error: {e.Message}");
+        }
+    }
+    private void ExportSettings(FolderColorSettings settings)
+    {
+        string path = EditorUtility.SaveFilePanel(
+            "Export Settings",
+            "",
+            "FolderColorSettings.json",
+            "json"
+        );
+        if (!string.IsNullOrEmpty(path))
+        {
+            var wrapper = new PresetWrapper
+            {
+                folderRules = settings.folderRules.Select(r => new PresetRule
+                {
+                    folderName = r.folderName,
+                    folderColor = r.folderColor,
+                    materialColor = r.materialColor,
+                    applyColorToSubfolders = r.applyColorToSubfolders,
+                    applyIconToSubfolders = r.applyIconToSubfolders
+                }).ToList()
+            };
+            string json = JsonUtility.ToJson(wrapper, true);
+            System.IO.File.WriteAllText(path, json);
+            Debug.Log($"Settings exported successfully: {path}");
+        }
+    }
+    private void ImportSettings(FolderColorSettings settings)
+    {
+        string path = EditorUtility.OpenFilePanel(
+            "Import Settings",
+            "",
+            "json"
+        );
+        if (!string.IsNullOrEmpty(path))
+        {
+            try
+            {
+                string json = System.IO.File.ReadAllText(path);
+                var importedRules = JsonUtility.FromJson<PresetWrapper>(json).folderRules;
+                Undo.RecordObject(settings, "Import Folder Colors");
+                // Her bir mevcut kural için
+                foreach (var existingRule in settings.folderRules)
+                {
+                    // İçe aktarılan kurallar arasında eşleşen bir kural ara
+                    var matchedPresetRule = importedRules.FirstOrDefault(p =>
+                        p.folderName.Equals(existingRule.folderName, StringComparison.OrdinalIgnoreCase));
+                    // Eşleşen kural bulunduysa, sadece renk ayarlarını güncelle
+                    if (matchedPresetRule != null)
+                    {
+                        existingRule.folderColor = matchedPresetRule.folderColor;
+                        existingRule.materialColor = matchedPresetRule.materialColor;
+                        existingRule.applyColorToSubfolders = matchedPresetRule.applyColorToSubfolders;
+                    }
+                }
+                // DEĞİŞİKLİKLERİ KAYDET
+                EditorUtility.SetDirty(settings);
+                AssetDatabase.SaveAssets();
+                // GÖRSELLİĞİ YENİLE
+                FolderColors.ClearCache();
+                EditorApplication.RepaintProjectWindow();
+                Debug.Log($"Settings imported successfully: {path}");
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"Ocurred an error while importing settings: {e.Message}");
+            }
         }
     }
     [System.Serializable]
