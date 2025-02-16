@@ -14,11 +14,10 @@ public class FolderColorEditWindow : EditorWindow
     private MaterialColor selectedMaterialColor = MaterialColor.Custom;
     public static void ShowWindow(string path, FolderColorSettings settings)
     {
-        var window = GetWindow<FolderColorEditWindow>("Klasör Düzenle");
+        var window = GetWindow<FolderColorEditWindow>("Edit Folder");
         window.folderPath = path;
         window.settings = settings;
         window.minSize = new Vector2(300, 200);
-        // Mevcut klasör kuralını bul ve ayarları yükle
         string folderName = System.IO.Path.GetFileName(path);
         var existingRule = settings.folderRules.Find(r => r.folderName == folderName);
         if (existingRule != null)

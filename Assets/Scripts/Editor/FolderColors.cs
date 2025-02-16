@@ -5,16 +5,6 @@ using FolderColorNamespace;
 using System.IO;
 using System.Linq;
 using UnityEditor.Experimental.SceneManagement;
-[System.Serializable]
-public class FolderRule
-{
-    public string folderName;
-    public Color folderColor;
-    public Texture2D icon;
-    public bool applyColorToSubfolders;
-    public bool applyIconToSubfolders;
-    public MaterialColor materialColor = MaterialColor.Custom;
-}
 [InitializeOnLoad]
 public static class FolderColors
 {
@@ -32,7 +22,7 @@ public static class FolderColors
         get
         {
             if (m_folderImageCache != null) return m_folderImageCache;
-            var imagePath = AssetDatabase.GUIDToAssetPath("d66445f0899e03442aba34473aee7242");
+            var imagePath = AssetDatabase.GUIDToAssetPath("ad63eb4211812f646a7d48663be817d9");
             m_folderImageCache = AssetDatabase.LoadAssetAtPath<Texture2D>(imagePath);
             return m_folderImageCache;
         }
@@ -87,7 +77,7 @@ public static class FolderColors
             Event.current.Use();
         }
     }
-    private static void ApplyFolderStyle(Rect rect, FolderColorNamespace.FolderRule rule, bool applyColor, bool applyIcon)
+    private static void ApplyFolderStyle(Rect rect, FolderRule rule, bool applyColor, bool applyIcon)
     {
         Color finalColor = rule.materialColor == MaterialColor.Custom ?
             rule.folderColor :
@@ -199,5 +189,12 @@ public static class FolderColors
             Selection.activeObject = settings;
         });
         menu.ShowAsContext();
+    }
+    public static void ClearCache()
+    {
+        combinedIconsCache.Clear();
+        m_folderImageCache = null;
+        // Önbelleği temizledikten sonra proje penceresini yenile
+        EditorApplication.RepaintProjectWindow();
     }
 }
