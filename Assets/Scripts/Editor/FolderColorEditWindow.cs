@@ -12,6 +12,7 @@ public class FolderColorEditWindow : EditorWindow
     private bool applyColorToSubfolders;
     private bool applyIconToSubfolders;
     private MaterialColor selectedMaterialColor = MaterialColor.Custom;
+    private bool applyToAllFolders;
     public static void ShowWindow(string path, FolderColorSettings settings)
     {
         var window = GetWindow<FolderColorEditWindow>("Edit Folder");
@@ -27,6 +28,7 @@ public class FolderColorEditWindow : EditorWindow
             window.applyColorToSubfolders = existingRule.applyColorToSubfolders;
             window.applyIconToSubfolders = existingRule.applyIconToSubfolders;
             window.selectedMaterialColor = existingRule.materialColor;
+            window.applyToAllFolders = existingRule.applyToAllFolders;
         }
     }
     private void OnGUI()
@@ -37,6 +39,7 @@ public class FolderColorEditWindow : EditorWindow
         EditorGUILayout.TextField("Folder Path", folderPath);
         GUI.enabled = true;
         EditorGUILayout.Space(10);
+        applyToAllFolders = EditorGUILayout.ToggleLeft("Apply to all folders with this name", applyToAllFolders);
         selectedMaterialColor = (MaterialColor)EditorGUILayout.EnumPopup("Material Color", selectedMaterialColor);
         if (selectedMaterialColor == MaterialColor.Custom)
         {
@@ -75,8 +78,10 @@ public class FolderColorEditWindow : EditorWindow
         var existingRule = settings.folderRules.Find(r => r.folderName == folderName);
         if (existingRule != null)
         {
+            existingRule.fullPath = folderPath;
             existingRule.folderColor = finalColor;
             existingRule.icon = selectedIcon;
+            existingRule.applyToAllFolders = applyToAllFolders;
             existingRule.applyColorToSubfolders = applyColorToSubfolders;
             existingRule.applyIconToSubfolders = applyIconToSubfolders;
             existingRule.materialColor = selectedMaterialColor;
@@ -86,8 +91,10 @@ public class FolderColorEditWindow : EditorWindow
             var newRule = new FolderColorNamespace.FolderRule
             {
                 folderName = folderName,
+                fullPath = folderPath,
                 folderColor = finalColor,
                 icon = selectedIcon,
+                applyToAllFolders = applyToAllFolders,
                 applyColorToSubfolders = applyColorToSubfolders,
                 applyIconToSubfolders = applyIconToSubfolders,
                 materialColor = selectedMaterialColor

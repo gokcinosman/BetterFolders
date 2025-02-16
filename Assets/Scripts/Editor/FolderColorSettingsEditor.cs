@@ -31,6 +31,7 @@ public class FolderColorSettingsEditor : Editor
         new("Tailwind 800", "e6049f55824952b42b81c376d6b98dd1"),
         new("Tailwind 900", "160a9e8504d038641929418e9e0f2a72"),
     };
+    private string searchText = string.Empty;
     public override void OnInspectorGUI()
     {
         var settings = target as FolderColorSettings;
@@ -39,7 +40,6 @@ public class FolderColorSettingsEditor : Editor
             "Modifier Key",
             settings.modifierKey
         );
-        // Yeni preset yükleme butonu
         EditorGUILayout.Space(10);
         if (GUILayout.Button("Load Preset"))
         {
@@ -56,35 +56,62 @@ public class FolderColorSettingsEditor : Editor
         }
         EditorGUILayout.Space(10);
         EditorGUILayout.LabelField("Folder Rules", EditorStyles.boldLabel);
-        base.OnInspectorGUI();
+        searchText = EditorGUILayout.TextField("Search", searchText);
+        if (!string.IsNullOrEmpty(searchText))
+        {
+            var filteredRules = settings.folderRules.Where(r =>
+                r.folderName.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+            DrawFilteredRules(filteredRules);
+        }
+        else
+        {
+            base.OnInspectorGUI();
+        }
+    }
+    private void DrawFilteredRules(List<FolderRule> rules)
+    {
+        var settings = target as FolderColorSettings;
+        var so = new SerializedObject(target);
+        var prop = so.FindProperty("folderRules");
+        EditorGUI.BeginChangeCheck();
+        foreach (var rule in rules)
+        {
+            // Orijinal listedeki indeksi bul
+            int originalIndex = settings.folderRules.IndexOf(rule);
+            if (originalIndex < 0) continue;
+            var ruleProp = prop.GetArrayElementAtIndex(originalIndex);
+            EditorGUILayout.PropertyField(ruleProp, new GUIContent(rule.folderName), true);
+        }
+        if (EditorGUI.EndChangeCheck())
+        {
+            so.ApplyModifiedProperties();
+            EditorUtility.SetDirty(target);
+        }
     }
     private void LoadPreset(FolderColorSettings settings, PresetData preset)
     {
         var path = AssetDatabase.GUIDToAssetPath(preset.Guid);
         if (string.IsNullOrEmpty(path))
         {
-            Debug.LogError($"Preset bulunamadı! GUID: {preset.Guid}");
+            Debug.LogError($"Preset not found! GUID: {preset.Guid}");
             return;
         }
         var textAsset = AssetDatabase.LoadAssetAtPath<TextAsset>(path);
         if (textAsset == null)
         {
-            Debug.LogError($"Geçersiz preset dosyası: {path}");
+            Debug.LogError($"Invalid preset file: {path}");
             return;
         }
         try
         {
             var presetRules = JsonUtility.FromJson<PresetWrapper>(textAsset.text).folderRules;
             Undo.RecordObject(settings, "Apply Preset Colors");
-            // MEVCUT TÜM KURALLARI RENK BAZLI GÜNCELLE
             foreach (var existingRule in settings.folderRules)
             {
-                // Presetteki eşleşen kuralı bul
                 var matchedPresetRule = presetRules.FirstOrDefault(p =>
                     p.folderName.Equals(existingRule.folderName, StringComparison.OrdinalIgnoreCase));
                 if (matchedPresetRule != null)
                 {
-                    // SADECE RENK VE İLGİLİ AYARLARI GÜNCELLE
                     existingRule.folderColor = matchedPresetRule.folderColor;
                     existingRule.materialColor = matchedPresetRule.materialColor;
                     existingRule.applyColorToSubfolders = matchedPresetRule.applyColorToSubfolders;
@@ -96,11 +123,10 @@ public class FolderColorSettingsEditor : Editor
             // GÖRSELLİĞİ YENİLE
             FolderColors.ClearCache();
             EditorApplication.RepaintProjectWindow();
-            Debug.Log($"Preset renkleri başarıyla uygulandı: {preset.Name}");
         }
         catch (System.Exception e)
         {
-            Debug.LogError($"Preset yükleme hatası: {e.Message}");
+            Debug.LogError($"Preset import error: {e.Message}");
         }
     }
     [System.Serializable]

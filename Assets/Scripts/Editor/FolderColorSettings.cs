@@ -20,6 +20,7 @@ namespace FolderColorNamespace
             Mouse2,    // Orta tıklama
             Mouse3     // Ekstra fare tuşu
         }
+        [HideInInspector]
         public ModifierKeyType modifierKey = ModifierKeyType.LeftAlt;
         public List<FolderRule> folderRules = new List<FolderRule>();
     }
@@ -28,7 +29,9 @@ namespace FolderColorNamespace
     {
         public string folderName;
         public Color folderColor;
+        public string fullPath;
         public Texture2D icon;
+        public bool applyToAllFolders = true;
         public bool applyColorToSubfolders;
         public bool applyIconToSubfolders;
         public MaterialColor materialColor = MaterialColor.Custom;

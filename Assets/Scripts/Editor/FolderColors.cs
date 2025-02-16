@@ -57,11 +57,13 @@ public static class FolderColors
         {
             bool isParentFolder = hierarchyFolders.Contains(rule.folderName);
             bool isDirectMatch = currentFolder == rule.folderName;
-            bool shouldApplyColor = (isDirectMatch || (rule.applyColorToSubfolders && isParentFolder));
+            bool shouldApply = rule.applyToAllFolders ?
+                isDirectMatch || (rule.applyColorToSubfolders && isParentFolder) :
+                path == rule.fullPath;
             bool shouldApplyIcon = (isDirectMatch || (rule.applyIconToSubfolders && isParentFolder));
-            if (shouldApplyColor || shouldApplyIcon)
+            if (shouldApply || shouldApplyIcon)
             {
-                ApplyFolderStyle(rect, rule, shouldApplyColor, shouldApplyIcon);
+                ApplyFolderStyle(rect, rule, shouldApply, shouldApplyIcon);
                 break;
             }
         }
