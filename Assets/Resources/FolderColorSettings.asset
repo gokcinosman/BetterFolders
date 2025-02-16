@@ -110,3 +110,15 @@ MonoBehaviour:
     applyColorToSubfolders: 1
     applyIconToSubfolders: 0
     materialColor: 0
+  - folderName: New Folder
+    folderColor: {r: 0.95686275, g: 0.2627451, b: 0.21176471, a: 1}
+    icon: {fileID: 0}
+    applyColorToSubfolders: 0
+    applyIconToSubfolders: 0
+    materialColor: 1
+  - folderName: Icons
+    folderColor: {r: 0.24705882, g: 0.31764707, b: 0.70980394, a: 1}
+    icon: {fileID: 0}
+    applyColorToSubfolders: 0
+    applyIconToSubfolders: 0
+    materialColor: 5
