@@ -28,7 +28,7 @@ MonoBehaviour:
     materialColor: 8
   - folderName: Resources
     folderColor: {r: 0.9837978, g: 1, b: 0, a: 1}
-    icon: {fileID: 2800000, guid: 498dcf67d3d3bf049b6994bc6369103a, type: 3}
+    icon: {fileID: 2800000, guid: d4d53b421e16a994ab1d527e1b0cae79, type: 3}
     applyColorToSubfolders: 0
     applyIconToSubfolders: 0
     materialColor: 0
@@ -63,8 +63,8 @@ MonoBehaviour:
     applyIconToSubfolders: 0
     materialColor: 0
   - folderName: Materials
-    folderColor: {r: 0.9837978, g: 1, b: 0, a: 1}
-    icon: {fileID: 2800000, guid: c08f488b0b28ba14e92b0328544ee472, type: 3}
+    folderColor: {r: 1, g: 0, b: 0.2520671, a: 1}
+    icon: {fileID: 2800000, guid: 1bff0c181a1576346b36ccf491118dcd, type: 3}
     applyColorToSubfolders: 0
     applyIconToSubfolders: 0
     materialColor: 0
@@ -88,13 +88,19 @@ MonoBehaviour:
     materialColor: 0
   - folderName: Shaders
     folderColor: {r: 0.9837978, g: 1, b: 0, a: 1}
-    icon: {fileID: 2800000, guid: 534866551139bc64bb08511b5254f927, type: 3}
+    icon: {fileID: 2800000, guid: d873c419420aac34799bf720b977ef71, type: 3}
     applyColorToSubfolders: 0
     applyIconToSubfolders: 0
     materialColor: 0
   - folderName: Textures
     folderColor: {r: 0.9837978, g: 1, b: 0, a: 1}
-    icon: {fileID: 2800000, guid: 534866551139bc64bb08511b5254f927, type: 3}
+    icon: {fileID: 2800000, guid: c08f488b0b28ba14e92b0328544ee472, type: 3}
+    applyColorToSubfolders: 0
+    applyIconToSubfolders: 0
+    materialColor: 0
+  - folderName: Sprites
+    folderColor: {r: 0.9837978, g: 1, b: 0, a: 1}
+    icon: {fileID: 2800000, guid: 36f4fcc33aefd1b43a191bdc79e24a23, type: 3}
     applyColorToSubfolders: 0
     applyIconToSubfolders: 0
     materialColor: 0
@@ -104,9 +110,9 @@ MonoBehaviour:
     applyColorToSubfolders: 0
     applyIconToSubfolders: 0
     materialColor: 0
-  - folderName: Sprites
-    folderColor: {r: 0.9837978, g: 1, b: 0, a: 1}
-    icon: {fileID: 2800000, guid: 534866551139bc64bb08511b5254f927, type: 3}
+  - folderName: Icons
+    folderColor: {r: 1, g: 1, b: 1, a: 1}
+    icon: {fileID: 0}
     applyColorToSubfolders: 0
     applyIconToSubfolders: 0
     materialColor: 0
