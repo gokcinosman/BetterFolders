@@ -33,7 +33,8 @@ You can search folder name from here<br/>
 ![image](https://github.com/user-attachments/assets/55bb8904-a214-41a8-a015-5a1bd8adc417)<br/>
 
 ## Thanks
-Some logics are based on this user.
-@baba-s
-The preset colors are based on the following site.
-https://tailwindcolor.com/
+Some logics are based on this user.<br/>
+@baba-s<br/>
+
+The preset colors are based on the following site.<br/>
+https://tailwindcolor.com/<br/>
