@@ -1,0 +1,19 @@
+{
+  "name": "com.gokcinosman.better-folders",
+  "version": "1.0.0",
+  "displayName": "Better Folders",
+  "description": "Editor extension to color folder icons and set custom icons in the Project window.",
+  "unity": "2022.3",
+  "keywords": [
+    "folder",
+    "color",
+    "icon",
+    "editor",
+    "customization"
+  ],
+  "author": {
+    "name": "gokcin",
+    "email": "osmangokcinn@gmail.com",
+    "url": "https://gokcin.is-a.dev/"
+  }
+}

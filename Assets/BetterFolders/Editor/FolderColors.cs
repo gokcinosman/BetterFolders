@@ -5,16 +5,20 @@ using FolderColorNamespace;
 using System.IO;
 using System.Linq;
 using UnityEditor.Experimental.SceneManagement;
+using System;
 [InitializeOnLoad]
 public static class FolderColors
 {
     private static FolderColorSettings settings;
-    private const string settingsPath = "Assets/Resources/FolderColorSettings.asset";
+    private const string settingsPath = "Assets/BetterFolders/Resources/FolderColorSettings.asset";
     private static Dictionary<string, Texture2D> combinedIconsCache = new Dictionary<string, Texture2D>();
     static FolderColors()
     {
-        LoadSettings();
-        EditorApplication.projectWindowItemOnGUI += HandleProjectWindowItem;
+        EditorApplication.delayCall += () =>
+        {
+            LoadSettings();
+            EditorApplication.projectWindowItemOnGUI += HandleProjectWindowItem;
+        };
     }
     private static Texture2D m_folderImageCache;
     private static Texture2D FolderImage
@@ -32,19 +36,85 @@ public static class FolderColors
         settings = AssetDatabase.LoadAssetAtPath<FolderColorSettings>(settingsPath);
         if (settings == null)
         {
-            if (!AssetDatabase.IsValidFolder("Assets/Resources"))
+            if (!AssetDatabase.IsValidFolder("Assets/BetterFolders/Resources"))
             {
-                AssetDatabase.CreateFolder("Assets", "Resources");
+                Directory.CreateDirectory("Assets/BetterFolders");
+                AssetDatabase.CreateFolder("Assets/BetterFolders", "Resources");
                 AssetDatabase.Refresh();
             }
             settings = ScriptableObject.CreateInstance<FolderColorSettings>();
             AssetDatabase.CreateAsset(settings, settingsPath);
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-            if (!AssetDatabase.LoadAssetAtPath<FolderColorSettings>(settingsPath))
+            EditorApplication.delayCall += () =>
             {
-                Debug.LogError("FolderColorSettings could not be created! Please check manually.");
-            }
+                // Package içindeki preset dosyasının yolunu kontrol et
+                string[] possiblePaths = new string[]
+                {
+                    "Assets/BetterFolders/Resources/Presets/DefaultFolderRules.json",
+                    "Packages/com.betterfolders/Resources/Presets/DefaultFolderRules.json",
+                    "Assets/BetterFolders/Resources/Presets/Tailwind 100.json"
+                };
+                TextAsset defaultPreset = null;
+                string foundPath = "";
+                foreach (var path in possiblePaths)
+                {
+                    AssetDatabase.Refresh();
+                    defaultPreset = AssetDatabase.LoadAssetAtPath<TextAsset>(path);
+                    if (defaultPreset != null)
+                    {
+                        foundPath = path;
+                        Debug.Log($"Preset found: {path}");
+                        break;
+                    }
+                }
+                if (defaultPreset != null)
+                {
+                    try
+                    {
+                        var importedRules = JsonUtility.FromJson<FolderColorSettingsEditor.PresetWrapper>(defaultPreset.text).folderRules;
+                        if (importedRules != null && importedRules.Count > 0)
+                        {
+                            settings.folderRules = importedRules.Select(r => new FolderRule
+                            {
+                                folderName = r.folderName,
+                                folderColor = r.folderColor,
+                                materialColor = r.materialColor,
+                                applyColorToSubfolders = r.applyColorToSubfolders,
+                                applyIconToSubfolders = r.applyIconToSubfolders,
+                                icon = !string.IsNullOrEmpty(r.iconGuid) ?
+                                    AssetDatabase.LoadAssetAtPath<Texture2D>(
+                                        AssetDatabase.GUIDToAssetPath(r.iconGuid)
+                                    ) : null
+                            }).ToList();
+                            Debug.Log($"Preset loaded successfully: {foundPath}, Rule count: {settings.folderRules.Count}");
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"Preset is empty or invalid: {foundPath}");
+                            settings.folderRules = new List<FolderRule>();
+                        }
+                        EditorUtility.SetDirty(settings);
+                        AssetDatabase.SaveAssets();
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError($"Error loading default preset: {e.Message}\nStack Trace: {e.StackTrace}");
+                        settings.folderRules = new List<FolderRule>();
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning($"Could not find any preset! Searched paths:\n{string.Join("\n", possiblePaths)}");
+                    settings.folderRules = new List<FolderRule>();
+                }
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
+            };
+        }
+        if (settings.folderRules == null)
+        {
+            settings.folderRules = new List<FolderRule>();
+            EditorUtility.SetDirty(settings);
+            AssetDatabase.SaveAssets();
         }
     }
     private static void HandleProjectWindowItem(string guid, Rect rect)

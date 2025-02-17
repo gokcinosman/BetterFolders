@@ -118,17 +118,52 @@ public class FolderColorSettingsEditor : Editor
         {
             var presetRules = JsonUtility.FromJson<PresetWrapper>(textAsset.text).folderRules;
             Undo.RecordObject(settings, "Apply Preset Colors");
-            foreach (var existingRule in settings.folderRules)
+            // Yeni kuralları geçici bir listede topla
+            var updatedRules = new List<FolderRule>(settings.folderRules);
+            foreach (var presetRule in presetRules)
             {
-                var matchedPresetRule = presetRules.FirstOrDefault(p =>
-                    p.folderName.Equals(existingRule.folderName, StringComparison.OrdinalIgnoreCase));
-                if (matchedPresetRule != null)
+                var existingRule = updatedRules.FirstOrDefault(r =>
+                    r.folderName.Equals(presetRule.folderName, StringComparison.OrdinalIgnoreCase));
+                if (existingRule != null)
                 {
-                    existingRule.folderColor = matchedPresetRule.folderColor;
-                    existingRule.materialColor = matchedPresetRule.materialColor;
-                    existingRule.applyColorToSubfolders = matchedPresetRule.applyColorToSubfolders;
+                    // Mevcut kuralı güncelle
+                    existingRule.folderColor = presetRule.folderColor;
+                    existingRule.materialColor = presetRule.materialColor;
+                    existingRule.applyColorToSubfolders = presetRule.applyColorToSubfolders;
+                    existingRule.applyIconToSubfolders = presetRule.applyIconToSubfolders;
+                    if (!string.IsNullOrEmpty(presetRule.iconGuid))
+                    {
+                        var iconPath = AssetDatabase.GUIDToAssetPath(presetRule.iconGuid);
+                        if (!string.IsNullOrEmpty(iconPath))
+                        {
+                            existingRule.icon = AssetDatabase.LoadAssetAtPath<Texture2D>(iconPath);
+                        }
+                    }
+                }
+                else
+                {
+                    // Yeni kural ekle
+                    var newRule = new FolderRule
+                    {
+                        folderName = presetRule.folderName,
+                        folderColor = presetRule.folderColor,
+                        materialColor = presetRule.materialColor,
+                        applyColorToSubfolders = presetRule.applyColorToSubfolders,
+                        applyIconToSubfolders = presetRule.applyIconToSubfolders
+                    };
+                    if (!string.IsNullOrEmpty(presetRule.iconGuid))
+                    {
+                        var iconPath = AssetDatabase.GUIDToAssetPath(presetRule.iconGuid);
+                        if (!string.IsNullOrEmpty(iconPath))
+                        {
+                            newRule.icon = AssetDatabase.LoadAssetAtPath<Texture2D>(iconPath);
+                        }
+                    }
+                    updatedRules.Add(newRule);
                 }
             }
+            // Güncellenmiş kuralları ayarlara ata
+            settings.folderRules = updatedRules;
             // DEĞİŞİKLİKLERİ KAYDET
             EditorUtility.SetDirty(settings);
             AssetDatabase.SaveAssets();
@@ -159,7 +194,8 @@ public class FolderColorSettingsEditor : Editor
                     folderColor = r.folderColor,
                     materialColor = r.materialColor,
                     applyColorToSubfolders = r.applyColorToSubfolders,
-                    applyIconToSubfolders = r.applyIconToSubfolders
+                    applyIconToSubfolders = r.applyIconToSubfolders,
+                    iconGuid = r.icon ? AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(r.icon)) : null
                 }).ToList()
             };
             string json = JsonUtility.ToJson(wrapper, true);
@@ -193,6 +229,9 @@ public class FolderColorSettingsEditor : Editor
                         existingRule.folderColor = matchedPresetRule.folderColor;
                         existingRule.materialColor = matchedPresetRule.materialColor;
                         existingRule.applyColorToSubfolders = matchedPresetRule.applyColorToSubfolders;
+                        existingRule.applyIconToSubfolders = matchedPresetRule.applyIconToSubfolders;
+                        existingRule.icon = !string.IsNullOrEmpty(matchedPresetRule.iconGuid) ?
+                            AssetDatabase.LoadAssetAtPath<Texture2D>(AssetDatabase.GUIDToAssetPath(matchedPresetRule.iconGuid)) : null;
                     }
                 }
                 // DEĞİŞİKLİKLERİ KAYDET
@@ -210,17 +249,18 @@ public class FolderColorSettingsEditor : Editor
         }
     }
     [System.Serializable]
-    private class PresetWrapper
+    public class PresetWrapper
     {
         public List<PresetRule> folderRules;
     }
     [System.Serializable]
-    private class PresetRule
+    public class PresetRule
     {
         public string folderName;
         public Color folderColor;
         public bool applyColorToSubfolders = true;
         public bool applyIconToSubfolders = false;
         public MaterialColor materialColor = MaterialColor.Custom;
+        public string iconGuid;
     }
 }

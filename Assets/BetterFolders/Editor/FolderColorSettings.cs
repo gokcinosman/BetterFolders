@@ -21,7 +21,7 @@ namespace FolderColorNamespace
             Mouse3     // Ekstra fare tuşu
         }
         [HideInInspector]
-        public ModifierKeyType modifierKey = ModifierKeyType.LeftAlt;
+        public ModifierKeyType modifierKey = ModifierKeyType.Mouse2;
         public List<FolderRule> folderRules = new List<FolderRule>();
     }
     [System.Serializable]
