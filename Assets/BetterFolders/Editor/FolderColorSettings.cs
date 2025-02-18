@@ -1,8 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
-namespace FolderColorNamespace
+namespace BetterFolders
 {
     [System.Serializable]
     public class FolderColorSettings : ScriptableObject
@@ -17,8 +15,8 @@ namespace FolderColorNamespace
             RightShift,
             LeftCommand,
             RightCommand,
-            Mouse2,    // Orta tıklama
-            Mouse3     // Ekstra fare tuşu
+            Mouse2,
+            Mouse3
         }
         [HideInInspector]
         public ModifierKeyType modifierKey = ModifierKeyType.Mouse2;
